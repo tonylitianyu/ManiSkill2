@@ -88,7 +88,9 @@ class PDEEPosController(PDJointPosController):
         return target_pose
 
     def set_action(self, action: np.ndarray):
-        action = self._preprocess_action(action)
+        action = clip_and_scale_action(
+                    action, self.action_space.low, self.action_space.high
+                )
 
         self._step = 0
         self._start_qpos = self.qpos

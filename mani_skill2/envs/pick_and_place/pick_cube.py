@@ -27,27 +27,31 @@ class PickCubeEnv(StationaryManipulationEnv):
         self.goal_site = self._build_sphere_site(self.goal_thresh)
 
     def _initialize_actors(self):
-        xy = self._episode_rng.uniform(-0.1, 0.1, [2])
-        xyz = np.hstack([xy, self.cube_half_size[2]])
-        q = [1, 0, 0, 0]
-        if self.obj_init_rot_z:
-            ori = self._episode_rng.uniform(0, 2 * np.pi)
-            q = euler2quat(0, 0, ori)
+        # xy = self._episode_rng.uniform(-0.1, 0.1, [2])
+        # xyz = np.hstack([xy, self.cube_half_size[2]])
+        # q = [1, 0, 0, 0]
+        # if self.obj_init_rot_z:
+        #     ori = self._episode_rng.uniform(0, 2 * np.pi)
+        #     q = euler2quat(0, 0, ori)
+        # self.obj.set_pose(Pose(xyz, q))
+
+        xyz = np.array([0.0, -0.1, self.cube_half_size[2]])
+        q = euler2quat(0, 0, 0)
         self.obj.set_pose(Pose(xyz, q))
 
     def _initialize_task(self, max_trials=100, verbose=False):
-        obj_pos = self.obj.pose.p
+        # obj_pos = self.obj.pose.p
 
-        # Sample a goal position far enough from the object
-        for i in range(max_trials):
-            goal_xy = self._episode_rng.uniform(-0.1, 0.1, [2])
-            goal_z = self._episode_rng.uniform(0, 0.5) + obj_pos[2]
-            goal_pos = np.hstack([goal_xy, goal_z])
-            if np.linalg.norm(goal_pos - obj_pos) > self.min_goal_dist:
-                if verbose:
-                    print(f"Found a valid goal at {i}-th trial")
-                break
-
+        # # Sample a goal position far enough from the object
+        # for i in range(max_trials):
+        #     goal_xy = self._episode_rng.uniform(-0.1, 0.1, [2])
+        #     goal_z = self._episode_rng.uniform(0, 0.5) + obj_pos[2]
+        #     goal_pos = np.hstack([goal_xy, goal_z])
+        #     if np.linalg.norm(goal_pos - obj_pos) > self.min_goal_dist:
+        #         if verbose:
+        #             print(f"Found a valid goal at {i}-th trial")
+        #         break
+        goal_pos = np.array([0.0, 0.1, self.cube_half_size[2]])
         self.goal_pos = goal_pos
         self.goal_site.set_pose(Pose(self.goal_pos))
 

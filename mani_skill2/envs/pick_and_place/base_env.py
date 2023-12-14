@@ -21,7 +21,7 @@ class StationaryManipulationEnv(BaseEnv):
     SUPPORTED_ROBOTS = {"panda": Panda, "xmate3_robotiq": Xmate3Robotiq}
     agent: Union[Panda, Xmate3Robotiq]
 
-    def __init__(self, *args, robot="panda", robot_init_qpos_noise=0.02, **kwargs):
+    def __init__(self, *args, robot="panda", robot_init_qpos_noise=0.0, **kwargs):
         self.robot_uid = robot
         self.robot_init_qpos_noise = robot_init_qpos_noise
         super().__init__(*args, **kwargs)
@@ -76,19 +76,19 @@ class StationaryManipulationEnv(BaseEnv):
             qpos = np.array(
                 [0.0, np.pi / 8, 0, -np.pi * 5 / 8, 0, np.pi * 3 / 4, np.pi / 4, 0.04, 0.04]
             )
-            # fmt: on
-            qpos[:-2] += self._episode_rng.normal(
-                0, self.robot_init_qpos_noise, len(qpos) - 2
-            )
+            # # fmt: on
+            # qpos[:-2] += self._episode_rng.normal(
+            #     0, self.robot_init_qpos_noise, len(qpos) - 2
+            # )
             self.agent.reset(qpos)
             self.agent.robot.set_pose(Pose([-0.615, 0, 0]))
         elif self.robot_uid == "xmate3_robotiq":
             qpos = np.array(
                 [0, np.pi / 6, 0, np.pi / 3, 0, np.pi / 2, -np.pi / 2, 0, 0]
             )
-            qpos[:-2] += self._episode_rng.normal(
-                0, self.robot_init_qpos_noise, len(qpos) - 2
-            )
+            # qpos[:-2] += self._episode_rng.normal(
+            #     0, self.robot_init_qpos_noise, len(qpos) - 2
+            # )
             self.agent.reset(qpos)
             self.agent.robot.set_pose(Pose([-0.562, 0, 0]))
         else:
@@ -101,17 +101,17 @@ class StationaryManipulationEnv(BaseEnv):
             qpos = np.array(
                 [0.0, 0, 0, -np.pi * 2 / 3, 0, np.pi * 2 / 3, np.pi / 4, 0.04, 0.04]
             )
-            # fmt: on
-            qpos[:-2] += self._episode_rng.normal(
-                0, self.robot_init_qpos_noise, len(qpos) - 2
-            )
+            # # fmt: on
+            # qpos[:-2] += self._episode_rng.normal(
+            #     0, self.robot_init_qpos_noise, len(qpos) - 2
+            # )
             self.agent.reset(qpos)
             self.agent.robot.set_pose(Pose([-0.615, 0, 0]))
         elif self.robot_uid == "xmate3_robotiq":
             qpos = np.array([0, 0.6, 0, 1.3, 0, 1.3, -1.57, 0, 0])
-            qpos[:-2] += self._episode_rng.normal(
-                0, self.robot_init_qpos_noise, len(qpos) - 2
-            )
+            # qpos[:-2] += self._episode_rng.normal(
+            #     0, self.robot_init_qpos_noise, len(qpos) - 2
+            # )
             self.agent.reset(qpos)
             self.agent.robot.set_pose(Pose([-0.562, 0, 0]))
         else:
@@ -125,7 +125,8 @@ class StationaryManipulationEnv(BaseEnv):
 
     def _register_render_cameras(self):
         if self.robot_uid == "panda":
-            pose = look_at([0.4, 0.4, 0.8], [0.0, 0.0, 0.4])
+            # pose = look_at([0.4, 0.4, 0.8], [0.0, 0.0, 0.4])
+            pose = look_at([0.20, 0.20, 0.15], [0.0, 0.0, 0.10])
         else:
             pose = look_at([0.5, 0.5, 1.0], [0.0, 0.0, 0.5])
         return CameraConfig("render_camera", pose.p, pose.q, 512, 512, 1, 0.01, 10)

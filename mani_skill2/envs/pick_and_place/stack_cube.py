@@ -80,11 +80,11 @@ class StackCubeEnv(StationaryManipulationEnv):
         region = [[-0.1, -0.2], [0.1, 0.2]]
         sampler = UniformSampler(region, self._episode_rng)
         radius = np.linalg.norm(self.box_half_size[:2]) + 0.001
-        cubeA_xy = xy + sampler.sample(radius, 100)
-        cubeB_xy = xy + sampler.sample(radius, 100, verbose=False)
+        cubeA_xy = [0.05, 0.05]#xy + sampler.sample(radius, 100)
+        cubeB_xy = [-0.05, -0.05]#xy + sampler.sample(radius, 100, verbose=False)
 
-        cubeA_quat = euler2quat(0, 0, self._episode_rng.uniform(0, 2 * np.pi))
-        cubeB_quat = euler2quat(0, 0, self._episode_rng.uniform(0, 2 * np.pi))
+        cubeA_quat = euler2quat(0, 0, 0)#self._episode_rng.uniform(0, 2 * np.pi))
+        cubeB_quat = euler2quat(0, 0, 0)#self._episode_rng.uniform(0, 2 * np.pi))
         z = self.box_half_size[2]
         cubeA_pose = sapien.Pose([cubeA_xy[0], cubeA_xy[1], z], cubeA_quat)
         cubeB_pose = sapien.Pose([cubeB_xy[0], cubeB_xy[1], z], cubeB_quat)

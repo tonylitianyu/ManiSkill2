@@ -82,8 +82,8 @@ class PandaDefaultConfig:
         )
         arm_pd_ee_delta_pose = PDEEPoseControllerConfig(
             self.arm_joint_names,
-            -0.1,
-            0.1,
+            -0.4,
+            0.4,
             0.1,
             self.arm_stiffness,
             self.arm_damping,

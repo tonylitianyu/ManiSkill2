@@ -14,13 +14,19 @@ MS1_ENV_IDS = [
     "MoveBucket-v1",
 ]
 
+class OpenFixedCabinetWrapper(gym.Wrapper):
+    def __init__(self, env) -> None:
+        super().__init__(env)
+        
+    def reset(self, *args, **kwargs):
+        return super().reset(options={'model_id':'1000'}, *args, **kwargs)
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--env-id", type=str, required=True)
     parser.add_argument("-o", "--obs-mode", type=str)
     parser.add_argument("--reward-mode", type=str)
-    parser.add_argument("-c", "--control-mode", type=str, default="pd_ee_delta_pose")
+    parser.add_argument("-c", "--control-mode", type=str, default="pd_ee_delta_pos")
     parser.add_argument("--render-mode", type=str, default="cameras")
     parser.add_argument("--enable-sapien-viewer", action="store_true")
     parser.add_argument("--record-dir", type=str)
@@ -44,7 +50,7 @@ def main():
         if args.control_mode is not None and not args.control_mode.startswith("base"):
             args.control_mode = "base_pd_joint_vel_arm_" + args.control_mode
 
-    env: BaseEnv = gym.make(
+    env = gym.make(
         args.env_id,
         obs_mode=args.obs_mode,
         reward_mode=args.reward_mode,
@@ -53,10 +59,15 @@ def main():
         **args.env_kwargs
     )
 
+    
+
     record_dir = args.record_dir
     if record_dir:
         record_dir = record_dir.format(env_id=args.env_id)
-        env = RecordEpisode(env, record_dir, render_mode=args.render_mode)
+        env = RecordEpisode(env, record_dir)
+
+
+    env = OpenFixedCabinetWrapper(env)
 
     print("Observation space", env.observation_space)
     print("Action space", env.action_space)
@@ -86,6 +97,7 @@ def main():
     has_gripper = any("gripper" in x for x in env.agent.controller.configs)
     gripper_action = 1
     EE_ACTION = 0.1
+    BASE_ACTION = 1.0
 
     while True:
         # -------------------------------------------------------------------------- #
@@ -132,21 +144,21 @@ def main():
         # Base
         if has_base:
             if key == "w":  # forward
-                base_action[0] = 1
+                base_action[0] = BASE_ACTION
             elif key == "s":  # backward
-                base_action[0] = -1
+                base_action[0] = -BASE_ACTION
             elif key == "a":  # left
-                base_action[1] = 1
+                base_action[1] = BASE_ACTION
             elif key == "d":  # right
-                base_action[1] = -1
+                base_action[1] = -BASE_ACTION
             elif key == "q":  # rotate counter
                 base_action[2] = 1
             elif key == "e":  # rotate clockwise
                 base_action[2] = -1
             elif key == "z":  # lift
-                base_action[3] = 1
+                base_action[3] = BASE_ACTION
             elif key == "x":  # lower
-                base_action[3] = -1
+                base_action[3] = -BASE_ACTION
 
         # End-effector
         if num_arms > 0:
@@ -187,7 +199,8 @@ def main():
 
         # Other functions
         if key == "0":  # switch to SAPIEN viewer
-            render_wait()
+            # render_wait()
+            break
         elif key == "r":  # reset env
             obs, _ = env.reset()
             gripper_action = 1
